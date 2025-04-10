@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '@/lib/supabase';
+import type { Recipe, CategoryGroup, Category } from '@/lib/supabase';
+import AnimatedCard from '@/components/AnimatedCard';
+import RecipeFilter from '@/components/RecipeFilter';
+
+// Get all recipes
+const { data: allRecipes } = await supabase
+  .from('recipes')
+  .select('*')
+  .order('publish_date', { ascending: false });
+
+if (!allRecipes) {
+  return Astro.redirect('/404');
+}
+
+// Get all categories and groups
+const { data: categoryGroups } = await supabase
+  .from('category_groups')
+  .select('*, categories(*)');
+
+// Get all unique tags
+const allTags = [...new Set(allRecipes.flatMap(recipe => recipe.tags.map(tag => tag.toLowerCase())))].sort();
+
+// Create category icons mapping
+const categoryIcons: Record<string, { icon: string; color: string }> = {};
+categoryGroups?.forEach(group => {
+  group.categories?.forEach(category => {
+    categoryIcons[category.slug] = {
+      icon: category.icon,
+      color: category.color
+    };
+  });
+});
+---
+
+<Layout title="All Recipes - LowCalRecipes">
+  <div class="max-w-7xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">All Recipes</h1>
+
+    <RecipeFilter
+      client:load
+      categoryGroups={categoryGroups}
+      categoryIcons={categoryIcons}
+      allTags={allTags}
+      recipes={allRecipes}
+    />
+
+    <div id="recipes-container">
+      <div id="recipes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {allRecipes.map((recipe: Recipe) => (
+          <div class="recipe-wrapper">
+            <AnimatedCard client:load>
+              <div 
+                class="recipe-card h-full"
+                data-tags={JSON.stringify(recipe.tags)}
+              >
+                <a
+                  href={`/recipes/${recipe.slug}`}
+                  class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow h-full flex flex-col"
+                >
+                  <div class="relative aspect-w-16 aspect-h-9 bg-gray-100 dark:bg-gray-700">
+                    {recipe.image && (
+                      <img
+                        src={recipe.image}
+                        alt={recipe.title}
+                        class="w-full h-48 object-cover"
+                        loading="lazy"
+                      />
+                    )}
+                  </div>
+                  <div class="p-6 flex flex-col flex-1">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{recipe.title}</h3>
+                    <p class="text-gray-600 dark:text-gray-300 line-clamp-2 mb-4">{recipe.description}</p>
+                    
+                    <div class="mt-auto space-y-4">
+                      <div class="grid grid-cols-4 gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <div class="text-center">
+                          <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.calories}</div>
+                          <div class="text-xs text-gray-600 dark:text-gray-300">Cal</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.protein}g</div>
+                          <div class="text-xs text-gray-600 dark:text-gray-300">Protein</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.carbs}g</div>
+                          <div class="text-xs text-gray-600 dark:text-gray-300">Carbs</div>
+                        </div>
+                        <div class="text-center">
+                          <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.fat}g</div>
+                          <div class="text-xs text-gray-600 dark:text-gray-300">Fat</div>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <span>⏱️ {recipe.cooking_time} mins</span>
+                        <span class="mx-2">•</span>
+                        <span>👥 {recipe.servings} servings</span>
+                      </div>
+                      
+                      {recipe.tags && (
+                        <div class="flex flex-wrap gap-2">
+                          {recipe.tags.map(tag => {
+                            const tagInfo = categoryIcons[tag.toLowerCase()] || { icon: '📝', color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200' };
+                            return (
+                              <span class={`px-3 py-1 rounded-full text-xs flex items-center gap-1 ${tagInfo.color}`}>
+                                <span>{tagInfo.icon}</span>
+                                <span>{tag}</span>
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                      
+                      <time datetime={recipe.publish_date} class="text-sm text-gray-500 dark:text-gray-400 block">
+                        {new Date(recipe.publish_date).toLocaleDateString()}
+                      </time>
+                    </div>
+                  </div>
+                </a>
+              </div>
+            </AnimatedCard>
+          </div>
+        ))}
+      </div>
+
+      <div id="no-results" class="hidden text-center py-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">No recipes found</h2>
+        <p class="text-gray-600 dark:text-gray-300">
+          Try adjusting your search terms to find more recipes.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  #recipes-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    #recipes-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    #recipes-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .recipe-wrapper {
+    height: 100%;
+  }
+</style>
+```

@@ -1,0 +1,221 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { supabase, type Recipe } from '@/lib/supabase';
+import ShareButton from '@/components/ShareButton';
+import GoogleAds from '@/components/GoogleAds';
+import RecipeRating from '@/components/RecipeRating';
+import FavoriteButton from '@/components/FavoriteButton';
+
+export async function getStaticPaths() {
+  const { data: recipes } = await supabase
+    .from('recipes')
+    .select('*');
+
+  if (!recipes) {
+    return [];
+  }
+
+  const recipesWithRatings = await Promise.all(
+    recipes.map(async (recipe) => {
+      const { data: ratings } = await supabase
+        .from('recipe_ratings')
+        .select('rating')
+        .eq('recipe_id', recipe.id);
+
+      const averageRating = ratings?.length 
+        ? ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length
+        : 0;
+
+      return {
+        params: { slug: recipe.slug },
+        props: { 
+          recipe,
+          averageRating,
+          totalRatings: ratings?.length || 0
+        }
+      };
+    })
+  );
+
+  return recipesWithRatings;
+}
+
+const { recipe, averageRating, totalRatings } = Astro.props;
+const publishDate = new Date(recipe.publish_date).toISOString();
+
+// Get the full URL for sharing
+const siteUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.PORT || 4321}` : 'https://lowcalkitchen.com';
+const canonicalURL = new URL(Astro.url.pathname, siteUrl).toString();
+const fullImageUrl = recipe.image.startsWith('http') ? recipe.image : new URL(recipe.image, siteUrl).toString();
+
+// Prepare structured data for the recipe
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  name: recipe.title,
+  description: recipe.description,
+  image: fullImageUrl,
+  author: {
+    "@type": "Organization",
+    name: "LowCal Kitchen"
+  },
+  datePublished: publishDate,
+  prepTime: `PT${recipe.cooking_time}M`,
+  cookTime: `PT${recipe.cooking_time}M`,
+  totalTime: `PT${recipe.cooking_time}M`,
+  recipeYield: `${recipe.servings} servings`,
+  recipeIngredient: recipe.ingredients,
+  recipeInstructions: recipe.instructions.map((step, index) => ({
+    "@type": "HowToStep",
+    position: index + 1,
+    text: step
+  })),
+  keywords: recipe.tags?.join(", "),
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: averageRating,
+    ratingCount: totalRatings,
+    bestRating: "5",
+    worstRating: "1"
+  },
+  nutrition: {
+    "@type": "NutritionInformation",
+    calories: `${recipe.calories} calories`,
+    proteinContent: `${recipe.protein}g`,
+    carbohydrateContent: `${recipe.carbs}g`,
+    fatContent: `${recipe.fat}g`
+  }
+};
+---
+
+<Layout 
+  title={`${recipe.title} - LowCal Kitchen`}
+  description={recipe.description}
+  image={fullImageUrl}
+  type="recipe"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  
+  <article class="max-w-4xl mx-auto px-4">
+    {recipe.image && (
+      <img 
+        src={recipe.image} 
+        alt={recipe.title}
+        class="w-full h-48 md:h-96 object-cover mb-8 rounded-2xl"
+        loading="eager"
+      />
+    )}
+
+    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
+      <div>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{recipe.title}</h1>
+        <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300">{recipe.description}</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <FavoriteButton client:load recipeId={recipe.id} />
+        <ShareButton 
+          client:load 
+          url={canonicalURL}
+          title={recipe.title}
+          image={fullImageUrl}
+          description={recipe.description}
+        />
+      </div>
+    </div>
+
+    {/* Top Ad */}
+    <GoogleAds slot="recipe-top-ad" client:load />
+
+    <div class="flex flex-wrap items-center gap-4 md:gap-6 mb-8 text-gray-600 dark:text-gray-300">
+      <div class="flex items-center">
+        <span class="mr-2">⏱️</span>
+        <span>{recipe.cooking_time} minutes</span>
+      </div>
+      <div class="flex items-center">
+        <span class="mr-2">👥</span>
+        <span>{recipe.servings} servings</span>
+      </div>
+      <time datetime={publishDate} class="text-gray-500 dark:text-gray-400">
+        Published: {new Date(recipe.publish_date).toLocaleDateString()}
+      </time>
+    </div>
+
+    {/* Macros Section */}
+    <div class="mb-12">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Nutrition Information</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+        <div class="text-center">
+          <div class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">{recipe.calories}</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">Calories</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">{recipe.protein}g</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">Protein</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">{recipe.carbs}g</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">Carbs</div>
+        </div>
+        <div class="text-center">
+          <div class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">{recipe.fat}g</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">Fat</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12">
+      <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Ingredients</h2>
+        <ul class="space-y-2 text-gray-600 dark:text-gray-300">
+          {recipe.ingredients.map((ingredient) => (
+            <li class="flex items-center">
+              <span class="mr-3 text-primary-500 dark:text-primary-400">•</span>
+              {ingredient}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Middle Ad */}
+      <GoogleAds slot="recipe-middle-ad" client:load />
+
+      <div>
+        <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Instructions</h2>
+        <ol class="space-y-4 text-gray-600 dark:text-gray-300">
+          {recipe.instructions.map((instruction, index) => (
+            <li class="flex">
+              <span class="font-bold mr-4 text-primary-500 dark:text-primary-400">{index + 1}.</span>
+              {instruction}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+
+    {/* Bottom Ad */}
+    <GoogleAds slot="recipe-bottom-ad" client:load />
+
+    {recipe.tags && (
+      <div class="mt-12 mb-8">
+        <div class="flex flex-wrap gap-2">
+          {recipe.tags.map((tag) => (
+            <span class="px-3 py-1 text-primary-600 dark:text-primary-400 text-sm">
+              #{tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {/* Rating Section */}
+    <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">Rate this Recipe</h2>
+      <RecipeRating 
+        client:load 
+        recipeId={recipe.id}
+        initialRating={averageRating}
+        totalRatings={totalRatings}
+      />
+    </div>
+  </article>
+</Layout>

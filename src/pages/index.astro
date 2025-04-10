@@ -1,0 +1,426 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+import type { Recipe } from '../lib/supabase';
+import AnimatedCard from '../components/AnimatedCard';
+import CookingTips from '../components/CookingTips';
+import HealthyEatingGuide from '../components/HealthyEatingGuide';
+import QuickTDEECalculator from '../components/QuickTDEECalculator';
+import NewsletterForm from '../components/NewsletterForm';
+
+const { data: recipes } = await supabase
+  .from('recipes')
+  .select('*')
+  .order('publish_date', { ascending: false });
+
+const totalRecipes = recipes?.length || 0;
+
+// Get all unique categories and their counts
+const categoryMap = new Map();
+recipes?.forEach(recipe => {
+  recipe.tags.forEach(tag => {
+    categoryMap.set(tag, (categoryMap.get(tag) || 0) + 1);
+  });
+});
+
+// Convert to array and sort by count
+const categoryStats = Array.from(categoryMap, ([name, count]) => ({
+  name,
+  count
+})).sort((a, b) => b.count - a.count);
+
+const totalProtein = recipes?.reduce((sum, recipe) => sum + recipe.protein, 0) || 0;
+const avgCalories = recipes?.reduce((sum, recipe) => sum + recipe.calories, 0) / (recipes?.length || 1);
+
+const title = "LowCal Kitchen - Healthy, High-Protein Recipes for Every Day";
+const description = "Discover delicious, protein-rich recipes that don't compromise on taste. From lean meats to nutritious meals, find your next favorite healthy recipe with complete nutritional information and easy-to-follow instructions.";
+const image = "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80";
+
+// Calculate average cooking time
+const avgCookingTime = Math.round(
+  (recipes?.reduce((sum, recipe) => sum + recipe.cooking_time, 0) || 0) / (recipes?.length || 1)
+);
+
+// Construct the full URL properly
+const siteUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.PORT || 4321}` : 'https://lowcalkitchen.com';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
+
+// Structured data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "LowCal Kitchen",
+  "url": pageUrl,
+  "description": description,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": `${pageUrl}recipes?search={search_term_string}`
+    },
+    "query-input": "required name=search_term_string"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "LowCal Kitchen",
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/favicon.svg`
+    }
+  },
+  "mainEntity": {
+    "@type": "ItemList",
+    "itemListElement": recipes?.slice(0, 3).map((recipe, index) => ({
+      "@type": "Recipe",
+      "position": index + 1,
+      "name": recipe.title,
+      "description": recipe.description,
+      "image": recipe.image,
+      "recipeYield": `${recipe.servings} servings`,
+      "prepTime": `PT${recipe.cooking_time}M`,
+      "nutrition": {
+        "@type": "NutritionInformation",
+        "calories": `${recipe.calories} calories`,
+        "proteinContent": `${recipe.protein}g`,
+        "carbohydrateContent": `${recipe.carbs}g`,
+        "fatContent": `${recipe.fat}g`
+      }
+    }))
+  }
+};
+
+// Category icons mapping with colors
+const categoryIcons: Record<string, { icon: string; color: string }> = {
+  breakfast: { icon: '🍳', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200' },
+  lunch: { icon: '🥪', color: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200' },
+  dinner: { icon: '🍽️', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200' },
+  dessert: { icon: '🍰', color: 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200' },
+  healthy: { icon: '🥗', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200' },
+  'meal prep': { icon: '🥡', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200' },
+  chicken: { icon: '🍗', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200' },
+  beef: { icon: '🥩', color: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200' },
+  fish: { icon: '🐟', color: 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-800 dark:text-cyan-200' },
+  vegetarian: { icon: '🥬', color: 'bg-lime-100 dark:bg-lime-900/30 text-lime-800 dark:text-lime-200' },
+  soup: { icon: '🥣', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200' },
+  'high-protein': { icon: '💪', color: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200' }
+};
+
+// Get top 6 categories
+const topCategories = categoryStats.slice(0, 6);
+---
+
+<Layout
+  title={title}
+  description={description}
+  image={image}
+  type="website"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+  <div class="relative">
+    <!-- Hero Section -->
+    <div class="text-center mb-16 bg-gradient-to-b from-primary-50 to-white dark:from-primary-900/20 dark:to-gray-900 py-20 px-4 rounded-3xl relative overflow-hidden">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80')] opacity-10 bg-cover bg-center"></div>
+      <div class="relative z-10">
+        <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-6 animate-fade-in">Welcome to Low Calorie Kitchen</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8 animate-fade-in-up">{description}</p>
+        <div class="flex justify-center gap-4">
+          <a 
+            href="/recipes" 
+            class="bg-primary-600 text-white px-8 py-4 rounded-lg hover:bg-primary-700 transition-all text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 animate-bounce-in"
+          >
+            Browse Recipes
+          </a>
+          <a 
+            href="#features" 
+            class="bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 px-8 py-4 rounded-lg border-2 border-primary-600 dark:border-primary-400 hover:bg-primary-50 dark:hover:bg-gray-700 transition-all text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 duration-200 animate-bounce-in"
+          >
+            Learn More
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
+      {[
+        { value: `${totalRecipes}+`, label: 'Healthy Recipes', icon: '📚' },
+        { value: categoryStats.length, label: 'Categories', icon: '🏷️' },
+        { value: `${Math.round(totalProtein / totalRecipes)}g`, label: 'Avg. Protein/Recipe', icon: '💪' },
+        { value: Math.round(avgCalories), label: 'Avg. Calories/Recipe', icon: '🔥' }
+      ].map((stat, index) => (
+        <AnimatedCard client:load delay={index * 0.1}>
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:-translate-y-1 duration-200 h-full">
+            <div class="text-4xl mb-3">{stat.icon}</div>
+            <div class="text-3xl font-bold text-primary-600 dark:text-primary-400 mb-2">{stat.value}</div>
+            <div class="text-gray-600 dark:text-gray-400">{stat.label}</div>
+          </div>
+        </AnimatedCard>
+      ))}
+    </div>
+
+    <!-- Add Quick TDEE Calculator after Stats Section -->
+    <section class="mb-16">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Calculate Your Daily Calories</h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300">
+          Find out how many calories you need to maintain, lose, or gain weight.
+        </p>
+      </div>
+      <QuickTDEECalculator client:load />
+    </section>
+
+    <!-- Features Section -->
+    <div id="features" class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Why Choose Our Recipes?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { 
+            icon: '🥗', 
+            title: 'Nutritionally Balanced', 
+            description: 'Each recipe is carefully crafted to provide optimal nutrition while keeping calories in check.',
+            features: ['Macro-balanced meals', 'Portion-controlled servings', 'Nutrient-dense ingredients']
+          },
+          { 
+            icon: '💪', 
+            title: 'High in Protein', 
+            description: 'Focus on protein-rich ingredients to help you maintain and build lean muscle mass.',
+            features: ['Quality protein sources', 'Vegetarian options', 'Post-workout friendly']
+          },
+          { 
+            icon: '⏱️', 
+            title: 'Quick & Easy', 
+            description: 'Simple instructions and reasonable prep times make healthy eating accessible.',
+            features: ['30-minute meals', 'Meal prep friendly', 'Simple ingredients']
+          }
+        ].map((feature, index) => (
+          <AnimatedCard client:load delay={index * 0.2}>
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg h-full">
+              <div class="text-4xl mb-4">{feature.icon}</div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{feature.title}</h3>
+              <p class="text-gray-600 dark:text-gray-300 mb-4">{feature.description}</p>
+              <ul class="space-y-2">
+                {feature.features.map(item => (
+                  <li class="flex items-center text-gray-600 dark:text-gray-300">
+                    <span class="text-primary-500 mr-2">•</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </AnimatedCard>
+        ))}
+      </div>
+    </div>
+
+    <!-- Add Healthy Eating Guide -->
+    <HealthyEatingGuide client:load />
+
+    <!-- Add Cooking Tips -->
+    <CookingTips client:load />
+
+    <!-- Popular Categories -->
+    <section class="mb-16">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Popular Categories</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {topCategories.map(({ name, count }, index) => {
+          const categoryInfo = categoryIcons[name.toLowerCase()] || { 
+            icon: '📝', 
+            color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200' 
+          };
+          return (
+            <AnimatedCard client:load delay={index * 0.1}>
+              <a
+                href={`/recipes?category=${name}`}
+                class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition-all text-center group h-full flex flex-col items-center justify-center"
+              >
+                <div class={`text-4xl mb-3 transform group-hover:scale-110 transition-transform ${categoryInfo.color} p-4 rounded-full`}>
+                  {categoryInfo.icon}
+                </div>
+                <div class="text-gray-900 dark:text-white font-medium capitalize mb-1">
+                  {name.replace(/-/g, ' ')}
+                </div>
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                  {count} {count === 1 ? 'recipe' : 'recipes'}
+                </div>
+              </a>
+            </AnimatedCard>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Quick Facts -->
+    <section class="mb-16 bg-primary-50 dark:bg-primary-900/20 rounded-3xl p-8">
+      <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Did You Know?</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {[
+          { icon: '⚡️', title: 'Quick Preparation', description: `Average cooking time is just ${avgCookingTime} minutes` },
+          { icon: '🎯', title: 'Calorie Conscious', description: `All recipes under ${Math.round(avgCalories * 1.5)} calories per serving` },
+          { icon: '📱', title: 'Mobile Friendly', description: 'Access recipes anywhere, anytime' }
+        ].map((fact, index) => (
+          <AnimatedCard client:load delay={index * 0.2}>
+            <div class="text-center">
+              <div class="text-4xl mb-4">{fact.icon}</div>
+              <div class="text-xl font-semibold text-gray-900 dark:text-white mb-2">{fact.title}</div>
+              <p class="text-gray-600 dark:text-gray-300">{fact.description}</p>
+            </div>
+          </AnimatedCard>
+        ))}
+      </div>
+    </section>
+
+    {recipes && recipes.length > 0 && (
+      <section class="mb-16 bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Latest Recipes</h2>
+          <a 
+            href="/recipes" 
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 flex items-center gap-2 group"
+          >
+            View All Recipes
+            <span class="transform group-hover:translate-x-1 transition-transform">→</span>
+          </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {recipes.slice(0, 6).map((recipe, index) => (
+            <AnimatedCard client:load delay={index * 0.1}>
+              <a 
+                href={`/recipes/${recipe.slug}`}
+                class="flex flex-col h-full bg-gray-50 dark:bg-gray-700 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 border border-gray-100 dark:border-gray-600"
+              >
+                {recipe.image && (
+                  <div class="relative h-48">
+                    <img 
+                      src={recipe.image} 
+                      alt={recipe.title}
+                      class="w-full h-full object-cover"
+                    />
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4 right-4">
+                      <div class="flex flex-wrap gap-2">
+                        {recipe.tags.slice(0, 2).map(tag => {
+                          const categoryInfo = categoryIcons[tag.toLowerCase()] || {
+                            icon: '📝',
+                            color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                          };
+                          return (
+                            <span class="px-3 py-1 rounded-full text-xs flex items-center gap-1 backdrop-blur-sm bg-white/10 text-white">
+                              <span>{categoryInfo.icon}</span>
+                              <span>{tag}</span>
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div class="flex flex-col flex-grow p-6">
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">{recipe.title}</h3>
+                  <p class="text-gray-600 dark:text-gray-300 line-clamp-2 mb-4 text-sm flex-grow">{recipe.description}</p>
+                  
+                  <div class="mt-auto">
+                    <div class="grid grid-cols-4 gap-2 p-3 bg-white dark:bg-gray-800 rounded-xl mb-4">
+                      <div class="text-center">
+                        <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.calories}</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Cal</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.protein}g</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Protein</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.carbs}g</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Carbs</div>
+                      </div>
+                      <div class="text-center">
+                        <div class="text-sm font-bold text-primary-600 dark:text-primary-400">{recipe.fat}g</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Fat</div>
+                      </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-sm">
+                      <div class="flex items-center gap-4 text-gray-500 dark:text-gray-400">
+                        <span class="flex items-center gap-1">
+                          <span>⏱️</span>
+                          {recipe.cooking_time} mins
+                        </span>
+                        <span class="flex items-center gap-1">
+                          <span>👥</span>
+                          {recipe.servings}
+                        </span>
+                      </div>
+                      <time datetime={recipe.publish_date} class="text-xs text-gray-500 dark:text-gray-400">
+                        {new Date(recipe.publish_date).toLocaleDateString()}
+                      </time>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </AnimatedCard>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Newsletter Section -->
+    <section class="mb-16 bg-white dark:bg-gray-800 rounded-3xl p-12 text-center">
+      <AnimatedCard client:load>
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Stay Updated</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+          Get our latest healthy recipes, cooking tips, and nutritional advice delivered straight to your inbox.
+        </p>
+        <NewsletterForm client:load />
+      </AnimatedCard>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounce-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.1);
+    }
+    80% {
+      opacity: 1;
+      transform: scale(0.89);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1s ease-out;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 1s ease-out;
+  }
+
+  .animate-bounce-in {
+    animation: bounce-in 1s cubic-bezier(0.36, 0, 0.66, -0.56);
+  }
+</style>

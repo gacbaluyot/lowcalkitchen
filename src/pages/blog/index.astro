@@ -1,0 +1,171 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { supabase } from '@/lib/supabase';
+import type { BlogPost } from '@/lib/supabase';
+import AnimatedCard from '@/components/AnimatedCard';
+
+// Get query parameters
+const { searchParams } = Astro.url;
+const tag = searchParams.get('tag');
+const search = searchParams.get('search');
+
+// Build query
+let query = supabase.from('blog_posts').select('*');
+
+if (tag) {
+  query = query.contains('tags', [tag]);
+}
+
+if (search) {
+  query = query.or(`title.ilike.%${search}%,content.ilike.%${search}%`);
+}
+
+query = query.order('publish_date', { ascending: false });
+
+const { data: posts } = await query;
+
+// Get all unique tags
+const allTags = [...new Set(posts?.flatMap(post => post.tags) || [])];
+
+// Format date
+function formatDate(dateString: string) {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<Layout title="Blog - Low Calorie Kitchen" description="Discover healthy eating tips, cooking guides, and nutritional advice on our blog.">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Blog</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+        Discover healthy eating tips, cooking guides, and expert advice to help you on your wellness journey.
+      </p>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-8">
+      <div class="grid md:grid-cols-2 gap-6">
+        <!-- Search Input -->
+        <form class="relative">
+          <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Search Articles
+          </label>
+          <div class="relative">
+            <input
+              type="search"
+              id="search"
+              name="search"
+              value={search || ''}
+              placeholder="Search by title or content..."
+              class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent pl-10"
+            />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+        </form>
+
+        <!-- Tags -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Filter by Topic
+          </label>
+          <div class="flex flex-wrap gap-2">
+            <a
+              href={search ? `/blog?search=${search}` : '/blog'}
+              class={`px-3 py-1 rounded-full text-sm ${
+                !tag ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              }`}
+            >
+              All Topics
+            </a>
+            {allTags.map(t => {
+              const isActive = tag === t;
+              const href = search ? `/blog?tag=${t}&search=${search}` : `/blog?tag=${t}`;
+              return (
+                <a
+                  href={href}
+                  class={`px-3 py-1 rounded-full text-sm ${
+                    isActive ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {t}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog Posts Grid -->
+    {posts && posts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map((post: BlogPost, index) => (
+          <AnimatedCard client:load delay={index * 0.1}>
+            <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+              {post.image && (
+                <a href={`/blog/${post.slug}`} class="block relative h-48 overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.title}
+                    class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+                  />
+                </a>
+              )}
+              <div class="p-6">
+                <div class="flex items-center gap-2 mb-4">
+                  <time datetime={post.publish_date} class="text-sm text-gray-500 dark:text-gray-400">
+                    {formatDate(post.publish_date)}
+                  </time>
+                  <span class="text-gray-300 dark:text-gray-600">•</span>
+                  <span class="text-sm text-gray-500 dark:text-gray-400">{post.reading_time} min read</span>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-3 line-clamp-2">
+                  <a href={`/blog/${post.slug}`} class="hover:text-primary-600 dark:hover:text-primary-400">
+                    {post.title}
+                  </a>
+                </h2>
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                  {post.excerpt}
+                </p>
+                <div class="flex items-center justify-between">
+                  <div class="text-sm text-gray-600 dark:text-gray-400">
+                    By {post.author}
+                  </div>
+                  <a
+                    href={`/blog/${post.slug}`}
+                    class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium"
+                  >
+                    Read More →
+                  </a>
+                </div>
+              </div>
+            </article>
+          </AnimatedCard>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">No articles found</h2>
+        <p class="text-gray-600 dark:text-gray-300">
+          {search ? (
+            <>
+              No articles found matching "{search}".
+              {tag && ` Try removing the tag filter or `}
+              Try a different search term.
+            </>
+          ) : (
+            'Try selecting a different topic to find more articles.'
+          )}
+        </p>
+      </div>
+    )}
+  </div>
+</Layout>

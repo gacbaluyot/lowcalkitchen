@@ -1,0 +1,191 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import ThemeToggle from '../components/ThemeToggle';
+import Logo from '../components/Logo';
+import Footer from '../components/Footer';
+import MobileMenu from '../components/MobileMenu';
+import CookieBanner from '../components/CookieBanner';
+import UserMenu from '../components/UserMenu';
+import '../styles/auth.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+  publishDate?: string;
+  modifiedDate?: string;
+  author?: string;
+  section?: string;
+}
+
+const { 
+  title = 'LowCal Kitchen - Healthy, High-Protein Recipes for Every Day',
+  description = 'Discover protein-rich, healthy recipes for a balanced lifestyle. From lean meats to nutritious meals, find your next favorite high-protein recipe here.',
+  image = 'https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80',
+  type = 'website',
+  publishDate,
+  modifiedDate,
+  author = 'LowCal Kitchen',
+  section
+} = Astro.props;
+
+const siteUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.PORT || 4321}` : 'https://lowcalkitchen.com';
+const canonicalURL = new URL(Astro.url.pathname, siteUrl).toString();
+const fullImageUrl = image.startsWith('http') ? image : new URL(image, siteUrl).toString();
+
+// Default organization schema
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "LowCal Kitchen",
+  "url": siteUrl,
+  "logo": `${siteUrl}/favicon.svg`,
+  "sameAs": [
+    "https://instagram.com/lowcalkitchen",
+    "https://facebook.com/lowcalkitchen",
+    "https://pinterest.com/lowcalkitchen",
+    "https://youtube.com/lowcalkitchen"
+  ]
+};
+
+// Website schema
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "LowCal Kitchen",
+  "url": siteUrl,
+  "description": "Discover healthy, protein-rich recipes for a balanced lifestyle",
+  "publisher": {
+    "@type": "Organization",
+    "name": "LowCal Kitchen",
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${siteUrl}/favicon.svg`
+    }
+  }
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="LowCal Kitchen" />
+    <meta property="og:locale" content="en_US" />
+    {publishDate && <meta property="article:published_time" content={publishDate} />}
+    {modifiedDate && <meta property="article:modified_time" content={modifiedDate} />}
+    {author && <meta property="article:author" content={author} />}
+    {section && <meta property="article:section" content={section} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalURL} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageUrl} />
+    <meta name="twitter:creator" content="@lowcalkitchen" />
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/favicon.svg" as="image" type="image/svg+xml" />
+    
+    <!-- Preconnect to external domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+
+    <!-- Defer non-critical CSS -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" 
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+
+    <!-- Defer AdSense -->
+    <script 
+      async 
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9442489279519761"
+      crossorigin="anonymous"
+    ></script>
+
+    <ViewTransitions />
+
+    <!-- Critical CSS -->
+    <style is:inline>
+      /* Add critical CSS here */
+      :root {
+        --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        --font-serif: 'Playfair Display', Georgia, serif;
+      }
+      body {
+        font-family: var(--font-sans);
+        margin: 0;
+        padding: 0;
+      }
+      .nav-fixed {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 50;
+      }
+    </style>
+  </head>
+  <body class="font-sans bg-gray-50 dark:bg-gray-900 transition-colors">
+    <nav class="bg-white dark:bg-gray-800 shadow-md fixed w-full top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+          <a href="/" class="hover:opacity-90 transition-opacity">
+            <Logo client:load />
+          </a>
+          
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex items-center">
+            <div class="flex items-center space-x-8">
+              <a href="/" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Home</a>
+              <a href="/recipes" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Recipes</a>
+              <a href="/calculator" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Calculator</a>
+              <a href="/blog" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white">Blog</a>
+              <div class="flex items-center">
+                <div class="mr-8">
+                  <ThemeToggle client:load />
+                </div>
+                <UserMenu client:load />
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Navigation -->
+          <div class="md:hidden">
+            <MobileMenu client:load />
+          </div>
+        </div>
+      </div>
+    </nav>
+    <main class="max-w-7xl mx-auto px-4 py-8 mt-[88px]">
+      <slot />
+    </main>
+    <Footer client:load />
+    <CookieBanner client:load />
+  </body>
+</html>
