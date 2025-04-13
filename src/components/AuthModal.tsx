@@ -12,10 +12,15 @@ interface AuthModalProps {
 
 export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN') {
+        // No need to manually store session - Supabase handles this
         toast.success('Successfully signed in!');
         onClose();
+      } else if (event === 'SIGNED_OUT') {
+        toast.success('Signed out');
       }
     });
 
@@ -41,7 +46,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ type: "spring", duration: 0.5 }}
+              transition={{ type: 'spring', duration: 0.5 }}
               className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
             >
               <div className="p-8">
@@ -52,7 +57,12 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                   >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -114,14 +124,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   }}
                   providers={['google']}
                   providerScopes={{
-                    google: 'profile email'
+                    google: 'profile email',
                   }}
                   queryParams={{
                     access_type: 'offline',
-                    prompt: 'consent'
+                    prompt: 'consent',
                   }}
                   theme={localStorage.getItem('theme') === 'dark' ? 'dark' : 'light'}
-                  redirectTo={`${window.location.origin}/auth/callback`}
+                  redirectTo={import.meta.env.PUBLIC_SUPABASE_OAUTH_CALLBACK}
                 />
               </div>
             </motion.div>

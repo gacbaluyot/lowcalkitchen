@@ -19,12 +19,16 @@ export default function FavoriteButton({ recipeId }: FavoriteButtonProps) {
   }, [recipeId]);
 
   const checkAuthStatus = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     setIsAuthenticated(!!session);
   };
 
   const checkFavoriteStatus = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       setIsLoading(false);
       return;
@@ -53,7 +57,9 @@ export default function FavoriteButton({ recipeId }: FavoriteButtonProps) {
     }
 
     setIsLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
     try {
       if (isFavorite) {
@@ -65,15 +71,25 @@ export default function FavoriteButton({ recipeId }: FavoriteButtonProps) {
           .eq('user_id', session?.user.id);
       } else {
         // Add to favorites
-        await supabase
-          .from('user_favorites')
-          .insert({
-            recipe_id: recipeId,
-            user_id: session?.user.id
-          });
+        await supabase.from('user_favorites').insert({
+          recipe_id: recipeId,
+          user_id: session?.user.id,
+        });
       }
 
-      setIsFavorite(!isFavorite);
+      // Update state after successful database operation
+      const newFavoriteState = !isFavorite;
+      setIsFavorite(newFavoriteState);
+
+      // Dispatch custom event for toast notification
+      try {
+        const event = new CustomEvent('favoriteToggled', {
+          detail: { isFavorited: newFavoriteState },
+        });
+        window.dispatchEvent(event);
+      } catch (err) {
+        console.error('Could not dispatch favorite event', err);
+      }
     } catch (error) {
       console.error('Error toggling favorite:', error);
     } finally {
@@ -82,11 +98,13 @@ export default function FavoriteButton({ recipeId }: FavoriteButtonProps) {
   };
 
   if (isLoading) {
-    return <div className="p-2 rounded-full text-gray-400">
-      <svg className="w-6 h-6 animate-pulse" viewBox="0 0 24 24">
-        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-      </svg>
-    </div>;
+    return (
+      <div className="p-2 rounded-full text-gray-400">
+        <svg className="w-6 h-6 animate-pulse" viewBox="0 0 24 24">
+          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+        </svg>
+      </div>
+    );
   }
 
   return (
@@ -94,26 +112,21 @@ export default function FavoriteButton({ recipeId }: FavoriteButtonProps) {
       <motion.button
         onClick={toggleFavorite}
         disabled={isLoading}
-        className={`p-2 rounded-full ${
-          isFavorite 
-            ? 'text-red-500 hover:text-red-600' 
+        className={`favorite-btn p-2 rounded-full ${
+          isFavorite
+            ? 'text-red-500 hover:text-red-600 favorited'
             : 'text-gray-400 hover:text-red-500'
         } transition-colors`}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
+        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       >
-        <svg 
-          className="w-6 h-6 fill-current" 
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
           <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
         </svg>
       </motion.button>
 
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)} 
-      />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>
   );
 }

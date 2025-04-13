@@ -22,13 +22,13 @@ export async function getStaticPaths() {
         .select('rating')
         .eq('recipe_id', recipe.id);
 
-      const averageRating = ratings?.length 
+      const averageRating = ratings?.length
         ? ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length
         : 0;
 
       return {
         params: { slug: recipe.slug },
-        props: { 
+        props: {
           recipe,
           averageRating,
           totalRatings: ratings?.length || 0
@@ -88,33 +88,36 @@ const structuredData = {
 };
 ---
 
-<Layout 
+<Layout
   title={`${recipe.title} - LowCal Kitchen`}
   description={recipe.description}
   image={fullImageUrl}
   type="recipe"
 >
   <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
-  
+
+  <!-- Toast container for notifications -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
   <article class="max-w-4xl mx-auto px-4">
     {recipe.image && (
-      <img 
-        src={recipe.image} 
+      <img
+        src={recipe.image}
         alt={recipe.title}
-        class="w-full h-48 md:h-96 object-cover mb-8 rounded-2xl"
+        class="w-full h-48 md:h-96 object-cover mb-4 md:mb-8 rounded-2xl"
         loading="eager"
       />
     )}
 
-    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
+    <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3 md:gap-4 mb-4 md:mb-8">
       <div>
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">{recipe.title}</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4">{recipe.title}</h1>
         <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300">{recipe.description}</p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 mt-2 md:mt-0">
         <FavoriteButton client:load recipeId={recipe.id} />
-        <ShareButton 
-          client:load 
+        <ShareButton
+          client:load
           url={canonicalURL}
           title={recipe.title}
           image={fullImageUrl}
@@ -126,7 +129,7 @@ const structuredData = {
     {/* Top Ad */}
     <GoogleAds slot="recipe-top-ad" client:load />
 
-    <div class="flex flex-wrap items-center gap-4 md:gap-6 mb-8 text-gray-600 dark:text-gray-300">
+    <div class="flex flex-wrap items-center gap-3 md:gap-6 mb-4 md:mb-8 text-gray-600 dark:text-gray-300">
       <div class="flex items-center">
         <span class="mr-2">⏱️</span>
         <span>{recipe.cooking_time} minutes</span>
@@ -141,9 +144,9 @@ const structuredData = {
     </div>
 
     {/* Macros Section */}
-    <div class="mb-12">
-      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Nutrition Information</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+    <div class="mb-6 md:mb-12">
+      <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3 md:mb-4">Nutrition Information</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-8 bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700">
         <div class="text-center">
           <div class="text-xl md:text-2xl font-bold text-primary-600 dark:text-primary-400">{recipe.calories}</div>
           <div class="text-sm text-gray-600 dark:text-gray-300">Calories</div>
@@ -163,14 +166,14 @@ const structuredData = {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 mb-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-1 md:gap-12 mb-6 md:mb-12">
       <div>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Ingredients</h2>
-        <ul class="space-y-2 text-gray-600 dark:text-gray-300">
-          {recipe.ingredients.map((ingredient) => (
-            <li class="flex items-center">
-              <span class="mr-3 text-primary-500 dark:text-primary-400">•</span>
-              {ingredient}
+        <h2 class="text-2xl font-semibold mb-3 md:mb-4 text-gray-900 dark:text-white">Ingredients</h2>
+        <ul class="space-y-1.5 md:space-y-2 text-gray-600 dark:text-gray-300">
+          {recipe.ingredients.map((ingredient: string) => (
+            <li class="flex items-start">
+              <span class="mr-3 text-primary-500 dark:text-primary-400 mt-0.5">•</span>
+              <span class="flex-1">{ingredient}</span>
             </li>
           ))}
         </ul>
@@ -180,12 +183,12 @@ const structuredData = {
       <GoogleAds slot="recipe-middle-ad" client:load />
 
       <div>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-900 dark:text-white">Instructions</h2>
-        <ol class="space-y-4 text-gray-600 dark:text-gray-300">
-          {recipe.instructions.map((instruction, index) => (
-            <li class="flex">
-              <span class="font-bold mr-4 text-primary-500 dark:text-primary-400">{index + 1}.</span>
-              {instruction}
+        <h2 class="text-2xl font-semibold mb-3 md:mb-4 text-gray-900 dark:text-white">Instructions</h2>
+        <ol class="space-y-3 md:space-y-4 text-gray-600 dark:text-gray-300">
+          {recipe.instructions.map((instruction: string, index: number) => (
+            <li class="flex items-start">
+              <span class="font-bold mr-3 md:mr-4 text-primary-500 dark:text-primary-400 mt-0.5">{index + 1}.</span>
+              <span class="flex-1">{instruction}</span>
             </li>
           ))}
         </ol>
@@ -196,9 +199,9 @@ const structuredData = {
     <GoogleAds slot="recipe-bottom-ad" client:load />
 
     {recipe.tags && (
-      <div class="mt-12 mb-8">
+      <div class="mt-6 md:mt-12 mb-4 md:mb-8">
         <div class="flex flex-wrap gap-2">
-          {recipe.tags.map((tag) => (
+          {recipe.tags.map((tag: string) => (
             <span class="px-3 py-1 text-primary-600 dark:text-primary-400 text-sm">
               #{tag}
             </span>
@@ -208,10 +211,10 @@ const structuredData = {
     )}
 
     {/* Rating Section */}
-    <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">Rate this Recipe</h2>
-      <RecipeRating 
-        client:load 
+    <div class="mt-6 md:mt-12 pt-4 md:pt-8 border-t border-gray-200 dark:border-gray-700">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 md:mb-6 text-center">Rate this Recipe</h2>
+      <RecipeRating
+        client:load
         recipeId={recipe.id}
         initialRating={averageRating}
         totalRatings={totalRatings}
@@ -219,3 +222,116 @@ const structuredData = {
     </div>
   </article>
 </Layout>
+
+<script>
+  // Toast notification system
+  function showToast(message: string, type: 'success' | 'info' | 'error' = 'success', duration = 5000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `flex items-center p-4 mb-3 max-w-xs rounded-lg shadow-md transition-all transform translate-x-0 ${
+      type === 'success'
+        ? 'bg-green-50 text-green-800 dark:bg-gray-800 dark:text-green-400 border-l-4 border-green-500'
+        : type === 'error'
+          ? 'bg-red-50 text-red-800 dark:bg-gray-800 dark:text-red-400 border-l-4 border-red-500'
+          : 'bg-blue-50 text-blue-800 dark:bg-gray-800 dark:text-blue-400 border-l-4 border-blue-500'
+    }`;
+
+    // Set toast content
+    toast.innerHTML = `
+      <div class="ml-3 text-sm font-normal">${message}</div>
+      <button type="button" class="ml-auto -mx-1.5 -my-1.5 rounded-lg p-1.5 inline-flex h-8 w-8 hover:bg-gray-200 dark:hover:bg-gray-700" aria-label="Close">
+        <span class="sr-only">Close</span>
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+        </svg>
+      </button>
+    `;
+
+    // Add toast to container with animation
+    container.appendChild(toast);
+    setTimeout(() => toast.classList.add('toast-enter'), 10);
+
+    // Setup close button
+    const closeButton = toast.querySelector('button');
+    closeButton?.addEventListener('click', () => {
+      toast.classList.add('toast-exit');
+      setTimeout(() => toast.remove(), 300);
+    });
+
+    // Auto remove after duration
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.classList.add('toast-exit');
+        setTimeout(() => toast.remove(), 300);
+      }
+    }, duration);
+  }
+
+  // Listen for favorite button events
+  document.addEventListener('DOMContentLoaded', () => {
+    // Find the favorite button in the DOM
+    const favoriteBtn = document.querySelector('.favorite-btn') as HTMLElement;
+
+    if (favoriteBtn) {
+      // Replace the original click handler with our enhanced version
+      const originalClickHandler = favoriteBtn.onclick;
+      favoriteBtn.onclick = async (e) => {
+        // Get the current state before toggling
+        const wasAlreadyFavorited = favoriteBtn.classList.contains('favorited');
+
+        // Call the original handler
+        if (originalClickHandler) {
+          originalClickHandler.call(favoriteBtn, e);
+        }
+
+        // Show appropriate toast message based on the previous state
+        if (wasAlreadyFavorited) {
+          showToast('Recipe removed from favorites', 'info');
+        } else {
+          showToast('Recipe added to favorites!', 'success');
+        }
+      };
+    }
+
+    // Setup a custom event listener as a fallback approach
+    window.addEventListener('favoriteToggled', (e) => {
+      const event = e as CustomEvent;
+      const isFavorited = event.detail?.isFavorited;
+
+      if (isFavorited === true) {
+        showToast('Recipe added to favorites!', 'success');
+      } else if (isFavorited === false) {
+        showToast('Recipe removed from favorites', 'info');
+      }
+    });
+  });
+</script>
+
+<style>
+/* Toast animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+  }
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(20px); }
+  }
+
+.toast-enter {
+  animation: fadeIn 0.3s ease-out forwards;
+  }
+
+.toast-exit {
+  animation: fadeOut 0.3s ease-out forwards;
+  }
+
+/* Ensure instructions and ingredients text wrap properly on mobile */
+ol li, ul li {
+  word-break: break-word;
+  }
+</style>

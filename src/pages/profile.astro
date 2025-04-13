@@ -1,61 +1,34 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { supabase } from '@/lib/supabase';
 
-// Get the current session
-const { data: { session } } = await supabase.auth.getSession();
-
-// Check if user is authenticated
-if (!session?.user) {
-  return Astro.redirect('/', 302);
-}
-
-const user = session.user;
-
-// Get user details from our users table
-const { data: userDetails } = await supabase
-  .from('users')
-  .select('*')
-  .eq('id', user.id)
-  .single();
-
-const title = "My Profile - LowCal Kitchen";
-const description = "Manage your LowCal Kitchen profile, preferences, and account settings.";
+// Keep the server-side part minimal - don't depend on auth here
+const title = 'My Profile - LowCal Kitchen';
+const description = 'Manage your LowCal Kitchen profile, preferences, and account settings.';
 ---
 
-<Layout 
-  title={title}
-  description={description}
-  type="profile"
->
-  <div class="max-w-4xl mx-auto px-4 py-8">
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">My Profile</h1>
-      
-      <div class="space-y-4">
-        <div>
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Account Information</h2>
-          <p class="text-gray-600 dark:text-gray-300">Email: {user.email}</p>
-          <p class="text-gray-600 dark:text-gray-300">Member Since: {new Date(userDetails?.created_at || '').toLocaleDateString()}</p>
-          <p class="text-gray-600 dark:text-gray-300">Role: {userDetails?.role || 'user'}</p>
-        </div>
+<Layout title={title} description={description} type="profile">
+  <div id="profile-container" class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Loading state shown initially -->
+    <div id="loading-state" class="text-center p-8">
+      <p class="text-gray-600 dark:text-gray-300">Loading your profile...</p>
+    </div>
 
-        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-          <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Preferences</h2>
-          <p class="text-gray-600 dark:text-gray-300">
-            Manage your account preferences and settings here.
-          </p>
-        </div>
+    <!-- Auth error state (hidden initially) -->
+    <div id="auth-error" class="text-center p-8 hidden">
+      <p class="text-red-600 dark:text-red-400">
+        You need to be logged in to view your profile.
+      </p>
+      <a
+        href="/login"
+        class="mt-4 inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Go to Login
+      </a>
+    </div>
 
-        <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
-          <button
-            id="signOutButton"
-            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-          >
-            Sign Out
-          </button>
-        </div>
-      </div>
+    <!-- Profile content (hidden initially) -->
+    <div id="profile-content" class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 hidden">
+      <!-- Content will be populated by JavaScript -->
     </div>
   </div>
 </Layout>
@@ -63,14 +36,225 @@ const description = "Manage your LowCal Kitchen profile, preferences, and accoun
 <script>
   import { supabase } from '@/lib/supabase';
 
-  // Add event listener to sign out button
-  document.getElementById('signOutButton')?.addEventListener('click', async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Error signing out:', error);
+  async function loadProfile() {
+    const loadingState = document.getElementById('loading-state');
+    const authError = document.getElementById('auth-error');
+    const profileContent = document.getElementById('profile-content');
+
+    // Add null checks
+    if (!loadingState || !authError || !profileContent) {
+      console.error('Required DOM elements not found');
+      return;
     }
-  });
+
+    try {
+      // Get session client-side (where it works)
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        // No authenticated session
+        loadingState.classList.add('hidden');
+        authError.classList.remove('hidden');
+        return;
+      }
+
+      const user = session.user;
+
+      // Fetch favorite recipes
+      const { data: favorites, error: favError } = await supabase
+        .from('user_favorites')
+        .select('recipe_id')
+        .eq('user_id', user.id);
+
+      if (favError) {
+        console.error('Error fetching favorites:', favError);
+      }
+
+      // Build favorites content
+      let favoritesContent = '';
+      if (favorites && favorites.length > 0) {
+        const recipeIds = favorites.map((fav) => fav.recipe_id);
+        const { data: recipes } = await supabase.from('recipes').select('*').in('id', recipeIds);
+
+        if (recipes && recipes.length > 0) {
+          favoritesContent = `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${recipes
+            .map(
+              (recipe) => `
+                <div class="recipe-card bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow" data-recipe-id="${recipe.id}">
+                  <a href="/recipes/${recipe.slug}" class="block">
+                    ${
+                recipe.image
+                  ? `<img src="${recipe.image}" alt="${recipe.title}" class="w-full h-40 object-cover">`
+                  : `<div class="w-full h-40 bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                        <span class="text-gray-400 dark:text-gray-500">No image</span>
+                      </div>`
+              }
+                    <div class="p-4">
+                      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">${recipe.title}</h3>
+                      <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">${recipe.description || ''}</p>
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">${recipe.cooking_time} mins</span>
+                        <button class="unfavorite-btn text-red-500 hover:text-red-600" title="Remove from favorites">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              `
+            )
+            .join('')}
+            </div>`;
+        } else {
+          favoritesContent =
+            '<p class="text-gray-600 dark:text-gray-300">You haven\'t saved any favorite recipes yet.</p>';
+        }
+      } else {
+        favoritesContent =
+          '<p class="text-gray-600 dark:text-gray-300">You haven\'t saved any favorite recipes yet.</p>';
+      }
+
+      // Populate profile content
+      profileContent.innerHTML = `
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">My Profile</h1>
+
+        <div class="space-y-8">
+          <div>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Account Information</h2>
+            <p class="text-gray-600 dark:text-gray-300">Email: ${user.email}</p>
+            <p class="text-gray-600 dark:text-gray-300">Member Since: ${new Date(user.created_at || '').toLocaleDateString()}</p>
+            <p class="text-gray-600 dark:text-gray-300">Role: ${user.role || 'user'}</p>
+          </div>
+
+          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Favorite Recipes</h2>
+            <div id="favorites-container">
+              ${favoritesContent}
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Preferences</h2>
+            <p class="text-gray-600 dark:text-gray-300">
+              Manage your account preferences and settings here.
+            </p>
+          </div>
+
+          <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <button
+              id="signOutButton"
+              class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        </div>
+      `;
+
+      // Show profile content and hide loading state
+      loadingState.classList.add('hidden');
+      profileContent.classList.remove('hidden');
+
+      // Set up event listeners
+      setupUnfavoriteButtons();
+      setupSignOutButton();
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      if (loadingState) {
+        loadingState.innerHTML = `
+          <div class="text-red-600 dark:text-red-400">
+            <p>Error loading profile. Please try again.</p>
+            <button id="retryButton" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+              Retry
+            </button>
+          </div>
+        `;
+
+        document.getElementById('retryButton')?.addEventListener('click', () => {
+          window.location.reload();
+        });
+      }
+    }
+  }
+
+  function setupUnfavoriteButtons() {
+    document.querySelectorAll('.unfavorite-btn').forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Fix TypeScript errors with proper type assertions
+        const target = e.currentTarget as HTMLElement;
+        const recipeCard = target.closest('.recipe-card') as HTMLElement;
+        if (!recipeCard) return;
+
+        const recipeId = recipeCard.dataset.recipeId;
+        if (!recipeId) return;
+
+        try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          if (!session) return;
+
+          const { error } = await supabase
+            .from('user_favorites')
+            .delete()
+            .eq('user_id', session.user.id)
+            .eq('recipe_id', recipeId);
+
+          if (error) throw error;
+
+          // Remove with animation
+          recipeCard.classList.add('opacity-0', 'scale-95');
+          setTimeout(() => {
+            recipeCard.remove();
+
+            // Check if no favorites remain
+            const remainingCards = document.querySelectorAll('.recipe-card');
+            if (remainingCards.length === 0) {
+              const container = document.getElementById('favorites-container');
+              if (container) {
+                container.innerHTML = '<p class="text-gray-600 dark:text-gray-300">You haven\'t saved any favorite recipes yet.</p>';
+              }
+            }
+          }, 300);
+        } catch (error) {
+          console.error('Error removing favorite:', error);
+        }
+      });
+    });
+  }
+
+  function setupSignOutButton() {
+    const signOutButton = document.getElementById('signOutButton');
+    if (signOutButton) {
+      signOutButton.addEventListener('click', async () => {
+        try {
+          const { error } = await supabase.auth.signOut();
+          if (error) throw error;
+          window.location.href = '/';
+        } catch (error) {
+          console.error('Error signing out:', error);
+        }
+      });
+    }
+  }
+
+  // Load profile data when DOM is ready
+  document.addEventListener('DOMContentLoaded', loadProfile);
 </script>
+
+<style>
+.recipe-card {
+  transition:
+  opacity 0.3s,
+  transform 0.3s;
+  }
+</style>
