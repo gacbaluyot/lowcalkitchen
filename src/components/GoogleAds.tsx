@@ -22,12 +22,15 @@ export default function GoogleAds({ slot, format = 'auto', responsive = true, st
     }
   }, []);
 
+  // Get AdSense client ID from environment variable
+  const adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
+
   return (
-    <div className="google-ads-container my-8">
+    <div className="google-ads-container my-4 md:my-8">
       <ins
         className="adsbygoogle"
         style={style || { display: 'block' }}
-        data-ad-client="ca-pub-YOUR_CLIENT_ID" // Replace with your AdSense client ID
+        data-ad-client={adClient}
         data-ad-slot={slot}
         data-ad-format={format}
         data-full-width-responsive={responsive}
