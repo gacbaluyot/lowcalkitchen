@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MacroPieChart } from "@/components/MacroPieChart.tsx";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface TDEEFormData {
   age: number;
@@ -43,7 +43,6 @@ export default function TDEECalculator() {
     carbs: number;
     fats: number;
   } | null>(null);
-  const [showModal, setShowModal] = useState(false);
 
   const calculateTDEE = () => {
     // BMR calculation using Mifflin-St Jeor Equation
@@ -74,7 +73,6 @@ export default function TDEECalculator() {
       carbs: Math.round(carbs),
       fats: Math.round(fats),
     });
-    setShowModal(true);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -194,55 +192,45 @@ export default function TDEECalculator() {
         </div>
       </form>
 
-      {showModal && results && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <AnimatePresence>
+        {results && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 shadow-lg w-full max-w-2xl mx-4 sm:mx-0"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg"
           >
-            <div className="flex justify-between items-center mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Your Results</h2>
-              <button
-                onClick={() => setShowModal(false)}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Your Results</h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-              <div className="bg-primary-50 dark:bg-primary-900/30 p-3 sm:p-4 rounded-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
+              <div className="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Base Metabolic Rate (BMR)
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                   {results.bmr} kcal
                 </div>
               </div>
-              <div className="bg-primary-50 dark:bg-primary-900/30 p-3 sm:p-4 rounded-lg">
+              <div className="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">
                   Total Daily Energy Expenditure
                 </div>
-                <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                   {results.tdee} kcal
                 </div>
               </div>
-              <div className="bg-primary-50 dark:bg-primary-900/30 p-3 sm:p-4 rounded-lg">
+              <div className="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Target Daily Calories</div>
-                <div className="text-xl sm:text-2xl font-bold text-primary-600 dark:text-primary-400">
+                <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                   {results.adjustedCalories} kcal
                 </div>
               </div>
             </div>
 
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-4">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
               Recommended Macro Split
             </h3>
-            <div className="h-48 sm:h-64 relative mb-6 sm:mb-8">
+            <div className="h-64 relative mb-8">
               <MacroPieChart
                 protein={results.protein}
                 carbs={results.carbs}
@@ -251,27 +239,27 @@ export default function TDEECalculator() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-green-50 dark:bg-green-900/30 p-3 sm:p-4 rounded-lg">
+              <div className="bg-green-50 dark:bg-green-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Protein</div>
-                <div className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400">
+                <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                   {results.protein}g
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   {results.protein * 4} kcal
                 </div>
               </div>
-              <div className="bg-blue-50 dark:bg-blue-900/30 p-3 sm:p-4 rounded-lg">
+              <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Carbohydrates</div>
-                <div className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                   {results.carbs}g
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
                   {results.carbs * 4} kcal
                 </div>
               </div>
-              <div className="bg-yellow-50 dark:bg-yellow-900/30 p-3 sm:p-4 rounded-lg">
+              <div className="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Fats</div>
-                <div className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+                <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                   {results.fats}g
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
@@ -280,8 +268,8 @@ export default function TDEECalculator() {
               </div>
             </div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 }
