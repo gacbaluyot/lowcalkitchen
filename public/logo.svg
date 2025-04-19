@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo Icon -->
+  <path d="M10 25C10 16.7157 16.7157 10 25 10H35C43.2843 10 50 16.7157 50 25C50 33.2843 43.2843 40 35 40H25C16.7157 40 10 33.2843 10 25Z" fill="#F97316"/>
+  <path d="M25 20C22.2386 20 20 22.2386 20 25C20 27.7614 22.2386 30 25 30C27.7614 30 30 27.7614 30 25C30 22.2386 27.7614 20 25 20Z" fill="white"/>
+  <path d="M35 20C32.2386 20 30 22.2386 30 25C30 27.7614 32.2386 30 35 30C37.7614 30 40 27.7614 40 25C40 22.2386 37.7614 20 35 20Z" fill="white"/>
+  <path d="M30 25C30 22.2386 27.7614 20 25 20C22.2386 20 20 22.2386 20 25C20 27.7614 22.2386 30 25 30C27.7614 30 30 27.7614 30 25Z" fill="#F97316"/>
+  
+  <!-- Text -->
+  <path d="M60 15H70V35H60V15Z" fill="#111827"/>
+  <path d="M75 15H85V35H75V15Z" fill="#111827"/>
+  <path d="M90 15H100V35H90V15Z" fill="#111827"/>
+  <path d="M105 15H115V35H105V15Z" fill="#111827"/>
+  <path d="M120 15H130V35H120V15Z" fill="#111827"/>
+  <path d="M135 15H145V35H135V15Z" fill="#111827"/>
+  <path d="M150 15H160V35H150V15Z" fill="#111827"/>
+  <path d="M165 15H175V35H165V15Z" fill="#111827"/>
+  
+  <!-- Kitchen Utensil Icon -->
+  <path d="M180 20L185 15L190 20L185 25L180 20Z" fill="#F97316"/>
+  <path d="M185 25V35" stroke="#F97316" stroke-width="2"/>
+  
+  <!-- Dark mode support -->
+  <style>
+    @media (prefers-color-scheme: dark) {
+      path[fill="#111827"] {
+        fill: #F3F4F6;
+      }
+    }
+  </style>
+</svg> 

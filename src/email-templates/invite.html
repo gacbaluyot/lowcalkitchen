@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You've been invited to LowCal Kitchen</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.5;
+      color: #374151;
+      margin: 0;
+      padding: 0;
+      background-color: #f9fafb;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      padding: 32px;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .logo svg {
+      max-width: 200px;
+      height: auto;
+    }
+    h1 {
+      color: #111827;
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0 0 16px;
+      text-align: center;
+    }
+    h2 {
+      color: #111827;
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0 0 16px;
+      text-align: center;
+    }
+    p {
+      color: #4b5563;
+      margin: 0 0 24px;
+      font-size: 16px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #f97316;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 16px;
+      text-align: center;
+      margin: 24px 0;
+      transition: background-color 0.2s;
+    }
+    .button:hover {
+      background-color: #ea580c;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 32px;
+      color: #6b7280;
+      font-size: 14px;
+    }
+    .divider {
+      height: 1px;
+      background-color: #e5e7eb;
+      margin: 24px 0;
+    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #111827;
+        color: #e5e7eb;
+      }
+      .card {
+        background-color: #1f2937;
+      }
+      h1, h2 {
+        color: #f9fafb;
+      }
+      p {
+        color: #d1d5db;
+      }
+      .divider {
+        background-color: #374151;
+      }
+      .footer {
+        color: #9ca3af;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">
+        <svg width="200" height="50" viewBox="0 0 200 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Logo Icon -->
+          <path d="M10 25C10 16.7157 16.7157 10 25 10H35C43.2843 10 50 16.7157 50 25C50 33.2843 43.2843 40 35 40H25C16.7157 40 10 33.2843 10 25Z" fill="#F97316"/>
+          <path d="M25 20C22.2386 20 20 22.2386 20 25C20 27.7614 22.2386 30 25 30C27.7614 30 30 27.7614 30 25C30 22.2386 27.7614 20 25 20Z" fill="white"/>
+          <path d="M35 20C32.2386 20 30 22.2386 30 25C30 27.7614 32.2386 30 35 30C37.7614 30 40 27.7614 40 25C40 22.2386 37.7614 20 35 20Z" fill="white"/>
+          <path d="M30 25C30 22.2386 27.7614 20 25 20C22.2386 20 20 22.2386 20 25C20 27.7614 22.2386 30 25 30C27.7614 30 30 27.7614 30 25C30 22.2386 27.7614 20 25 20Z" fill="#F97316"/>
+          
+          <!-- Text -->
+          <path d="M60 15H70V35H60V15Z" fill="#111827"/>
+          <path d="M75 15H85V35H75V15Z" fill="#111827"/>
+          <path d="M90 15H100V35H90V15Z" fill="#111827"/>
+          <path d="M105 15H115V35H105V15Z" fill="#111827"/>
+          <path d="M120 15H130V35H120V15Z" fill="#111827"/>
+          <path d="M135 15H145V35H135V15Z" fill="#111827"/>
+          <path d="M150 15H160V35H150V15Z" fill="#111827"/>
+          <path d="M165 15H175V35H165V15Z" fill="#111827"/>
+          
+          <!-- Kitchen Utensil Icon -->
+          <path d="M180 20L185 15L190 20L185 25L180 20Z" fill="#F97316"/>
+          <path d="M185 25V35" stroke="#F97316" stroke-width="2"/>
+        </svg>
+      </div>
+      
+      <h1>You've been invited to LowCal Kitchen</h1>
+      
+      <p>You have been invited to join our community of healthy cooking enthusiasts at {{ .SiteURL }}.</p>
+      
+      <p>LowCal Kitchen is a platform where you can discover, create, and share delicious low-calorie recipes with others who share your passion for healthy eating.</p>
+      
+      <div style="text-align: center;">
+        <a href="{{ .ConfirmationURL }}" class="button">Accept Invitation</a>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <p>If you didn't expect this invitation, you can safely ignore this email.</p>
+      
+      <div class="footer">
+        <p>© 2024 LowCal Kitchen. All rights reserved.</p>
+        <p>This is an automated message, please do not reply.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 
