@@ -171,7 +171,7 @@ const topCategories = categoryStats.slice(0, 6);
     </section>
 
     <!-- Features Section -->
-    <div id="features" class="mb-16">
+    <div id="features" class="mb-16 scroll-mt-24">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">Why Choose Our Recipes?</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         {[
@@ -422,5 +422,10 @@ const topCategories = categoryStats.slice(0, 6);
 
   .animate-bounce-in {
     animation: bounce-in 1s cubic-bezier(0.36, 0, 0.66, -0.56);
+  }
+
+  /* Smooth scroll behavior */
+  html {
+    scroll-behavior: smooth;
   }
 </style>

@@ -19,6 +19,14 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  // Ensure auth styles are loaded
+  useEffect(() => {
+    if (isOpen) {
+      // Import auth styles dynamically
+      import('../styles/auth.css');
+    }
+  }, [isOpen]);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -44,7 +52,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
         return;
       }
   
-      // 2️⃣ If it doesn’t exist, proceed with signup
+      // 2️⃣ If it doesn't exist, proceed with signup
       const { data, error } = await supabase.auth.signUp({ email, password });
       console.log(data);
   

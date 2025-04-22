@@ -25,6 +25,7 @@ export default function GoogleAds({ slot, format = 'auto', responsive = true, st
   // Get AdSense client ID from environment variable
   const adClient = import.meta.env.PUBLIC_ADSENSE_CLIENT_ID;
 
+  console.log(adClient);
   return (
     <div className="google-ads-container my-4 md:my-8">
       <ins
