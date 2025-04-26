@@ -4,7 +4,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t dark:border-gray-700 mt-12">
+    <footer className="bg-primary-50 dark:bg-gray-800 border-t border-primary-100 dark:border-gray-700 mt-12">
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* About Section */}
@@ -128,7 +128,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className="pt-8 border-t border-primary-100 dark:border-gray-700">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 md:mb-0">
               © {currentYear} LowCal Kitchen. All rights reserved.

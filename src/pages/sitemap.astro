@@ -1,0 +1,138 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '@/lib/supabase';
+
+// Fetch recipes for sitemap
+const { data: recipes } = await supabase
+  .from('recipes')
+  .select('title, slug')
+  .order('title');
+
+// Fetch blog posts for sitemap
+const { data: posts } = await supabase
+  .from('blog_posts')
+  .select('title, slug')
+  .order('title');
+
+const mainPages = [
+  { title: 'Home', url: '/' },
+  { title: 'Recipes', url: '/recipes' },
+  { title: 'Calculator', url: '/calculator' },
+  { title: 'Blog', url: '/blog' },
+];
+
+const legalPages = [
+  { title: 'Terms of Service', url: '/terms' },
+  { title: 'Privacy Policy', url: '/privacy' },
+];
+
+const userPages = [
+  { title: 'Profile', url: '/profile' },
+];
+---
+
+<Layout 
+  title="Sitemap - LowCal Kitchen"
+  description="Complete sitemap of LowCal Kitchen's website content and pages."
+>
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Sitemap</h1>
+
+    <div class="space-y-12">
+      <!-- Main Navigation -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Main Pages</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <ul class="space-y-2">
+            {mainPages.map(page => (
+              <li>
+                <a 
+                  href={page.url}
+                  class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                >
+                  {page.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <!-- Recipes -->
+      {recipes && recipes.length > 0 && (
+        <section>
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Recipes</h2>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {recipes.map(recipe => (
+                <a 
+                  href={`/recipes/${recipe.slug}`}
+                  class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                >
+                  {recipe.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- Blog Posts -->
+      {posts && posts.length > 0 && (
+        <section>
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Blog Posts</h2>
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {posts.map(post => (
+                <a 
+                  href={`/blog/${post.slug}`}
+                  class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                >
+                  {post.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      <!-- User Pages -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">User Pages</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <ul class="space-y-2">
+            {userPages.map(page => (
+              <li>
+                <a 
+                  href={page.url}
+                  class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                >
+                  {page.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <!-- Legal Pages -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Legal Information</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
+          <ul class="space-y-2">
+            {legalPages.map(page => (
+              <li>
+                <a 
+                  href={page.url}
+                  class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+                >
+                  {page.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+</Layout>

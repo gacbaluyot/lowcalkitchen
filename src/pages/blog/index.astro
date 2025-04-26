@@ -109,7 +109,7 @@ function formatDate(dateString: string) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {posts.map((post: BlogPost, index) => (
           <AnimatedCard client:load delay={index * 0.1}>
-            <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+            <article class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
               {post.image && (
                 <a href={`/blog/${post.slug}`} class="block relative h-48 overflow-hidden">
                   <img
@@ -119,7 +119,7 @@ function formatDate(dateString: string) {
                   />
                 </a>
               )}
-              <div class="p-6">
+              <div class="p-6 flex flex-col flex-grow">
                 <div class="flex items-center gap-2 mb-4">
                   <time datetime={post.publish_date} class="text-sm text-gray-500 dark:text-gray-400">
                     {formatDate(post.publish_date)}
@@ -132,10 +132,10 @@ function formatDate(dateString: string) {
                     {post.title}
                   </a>
                 </h2>
-                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3 flex-grow">
                   {post.excerpt}
                 </p>
-                <div class="flex items-center justify-between">
+                <div class="mt-auto flex items-center justify-between">
                   <div class="text-sm text-gray-600 dark:text-gray-400">
                     By {post.author}
                   </div>
