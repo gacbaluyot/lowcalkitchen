@@ -6,7 +6,6 @@ import Footer from '../components/Footer';
 import MobileMenu from '../components/MobileMenu';
 import CookieBanner from '../components/CookieBanner';
 import UserMenu from '../components/UserMenu';
-import '../styles/auth.css';
 
 interface Props {
   title?: string;
@@ -17,6 +16,7 @@ interface Props {
   modifiedDate?: string;
   author?: string;
   section?: string;
+  styles?: string[];
 }
 
 const { 
@@ -27,7 +27,8 @@ const {
   publishDate,
   modifiedDate,
   author = 'LowCal Kitchen',
-  section
+  section,
+  styles
 } = Astro.props;
 
 const siteUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.PORT || 4321}` : 'https://lowcalkitchen.com';
@@ -174,13 +175,13 @@ const websiteSchema = {
         line-height: 1.2;
       }
       .header {
-        position: fixed;
+        position: sticky;
         top: 0;
         left: 0;
         right: 0;
         height: var(--header-height);
         z-index: 50;
-        background-color: rgba(255, 255, 255, 0.9);
+        background-color: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(8px);
         border-bottom: 1px solid rgba(229, 231, 235, 0.2);
         transition: transform 0.3s ease;
@@ -192,7 +193,7 @@ const websiteSchema = {
         background-color: #111827;
       }
       .dark .header {
-        background-color: rgba(31, 41, 55, 0.9);
+        background-color: rgba(31, 41, 55, 0.95);
       }
       .container {
         max-width: 1280px;
@@ -218,6 +219,11 @@ const websiteSchema = {
       }
     </style>
 
+    <!-- Page-specific styles -->
+    {styles?.map((style) => (
+      <link rel="stylesheet" href={style} />
+    ))}
+
     <script is:inline>
       // Header scroll behavior
       let lastScroll = 0;
@@ -240,21 +246,21 @@ const websiteSchema = {
     </script>
   </head>
   <body class="font-sans antialiased min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-    <header class="fixed top-0 left-0 right-0 h-[var(--header-height)] z-50 bg-white/90 dark:bg-gray-800/90 border-b border-gray-200/20 dark:border-gray-700/20 transition-transform duration-300">
-      <div class="container mx-auto px-4 max-w-7xl">
-        <div class="flex justify-between items-center h-[72px]">
+    <header class="sticky top-0 left-0 right-0 h-[var(--header-height)] z-50 bg-white/90 dark:bg-gray-800/90 border-b border-gray-200/20 dark:border-gray-700/20 transition-transform duration-300">
+      <div class="container mx-auto px-6 max-w-[1600px] h-full">
+        <div class="flex justify-between items-center h-full">
           <a href="/" class="hover:opacity-90 transition-opacity">
             <Logo client:load />
           </a>
           
           <!-- Desktop Navigation -->
-          <div class="hidden md:flex items-center">
-            <div class="flex items-center space-x-8">
+          <div class="hidden md:flex items-center h-full">
+            <div class="flex items-center space-x-8 h-full">
               <a href="/" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Home</a>
               <a href="/recipes" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Recipes</a>
               <a href="/calculator" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Calculator</a>
               <a href="/blog" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
-              <div class="flex items-center">
+              <div class="flex items-center h-full">
                 <div class="mr-8">
                   <ThemeToggle client:load />
                 </div>
@@ -272,7 +278,7 @@ const websiteSchema = {
     </header>
 
     <main class="flex-1 pt-[var(--header-height)]">
-      <div class="container py-8 mt-5">
+      <div class="container mx-auto px-6 max-w-[1600px] py-5">
         <slot />
       </div>
     </main>

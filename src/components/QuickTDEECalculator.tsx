@@ -44,9 +44,14 @@ export default function QuickTDEECalculator() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 text-center">
         Quick Calorie Calculator
       </h2>
+      <p className="text-gray-600 dark:text-gray-400 text-center mb-6">
+        Calculate Your Daily Calories
+        <br />
+        Find out how many calories you need to maintain, lose, or gain weight.
+      </p>
 
       <form onSubmit={calculateTDEE} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
