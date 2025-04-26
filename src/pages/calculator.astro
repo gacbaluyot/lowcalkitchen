@@ -43,61 +43,65 @@ const structuredData = {
 >
   <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
 
-  <div class="max-w-4xl mx-auto px-4">
-    <div class="text-center mb-4 md:mb-12">
-      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2 md:mb-4">TDEE & Macro Calculator</h1>
-      <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">TDEE & Macro Calculator</h1>
+      <p class="text-xl text-gray-600 dark:text-gray-300">
         Calculate your daily calorie needs and get personalized macro recommendations based on your goals.
       </p>
     </div>
 
-    {/* Calculator - Moved to top for mobile visibility */}
+    {/* Calculator */}
     <TDEECalculator client:load />
 
     {/* Top Ad */}
-    <GoogleAds slot="calculator-top-ad" client:load />
+    <div class="my-12">
+      <GoogleAds slot="calculator-top-ad" client:load />
+    </div>
 
-    <div class="my-6 md:mb-8 bg-primary-50 dark:bg-primary-900/20 p-4 md:p-6 rounded-xl">
-      <h2 class="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 md:mb-4">How it Works</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-        <div class="flex flex-col items-center text-center mb-4 md:mb-0">
-          <div class="text-4xl mb-2 md:mb-4">📊</div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Calculate BMR</h3>
+    <div class="bg-primary-50 dark:bg-primary-900/20 p-8 rounded-xl mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">How it Works</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="flex flex-col items-center text-center">
+          <div class="text-4xl mb-4">📊</div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Calculate BMR</h3>
           <p class="text-gray-600 dark:text-gray-300">First, we calculate your Basal Metabolic Rate (BMR) using the scientifically validated Mifflin-St Jeor Equation.</p>
         </div>
-        <div class="flex flex-col items-center text-center mb-4 md:mb-0">
-          <div class="text-4xl mb-2 md:mb-4">🏃‍♂️</div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Determine TDEE</h3>
+        <div class="flex flex-col items-center text-center">
+          <div class="text-4xl mb-4">🏃‍♂️</div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Determine TDEE</h3>
           <p class="text-gray-600 dark:text-gray-300">Then, we factor in your activity level to find your Total Daily Energy Expenditure (TDEE).</p>
         </div>
         <div class="flex flex-col items-center text-center">
-          <div class="text-4xl mb-2 md:mb-4">🎯</div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Set Goals</h3>
+          <div class="text-4xl mb-4">🎯</div>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Set Goals</h3>
           <p class="text-gray-600 dark:text-gray-300">Finally, we adjust calories and macros based on your specific fitness goals.</p>
         </div>
       </div>
     </div>
 
     {/* Middle Ad */}
-    <GoogleAds slot="calculator-middle-ad" client:load />
+    <div class="my-12">
+      <GoogleAds slot="calculator-middle-ad" client:load />
+    </div>
 
-    <div class="mt-6 md:mt-12 space-y-6 md:space-y-8">
-      <section class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg">
-        <h2 class="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 md:mb-4">Understanding Your Results</h2>
-        <div class="space-y-3 md:space-y-4 text-gray-600 dark:text-gray-300">
+    <div class="space-y-8">
+      <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Understanding Your Results</h2>
+        <div class="space-y-4 text-gray-600 dark:text-gray-300">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">BMR (Basal Metabolic Rate)</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">BMR (Basal Metabolic Rate)</h3>
             <p>Your BMR represents the number of calories your body burns at complete rest to maintain basic life functions like breathing, circulation, and cell production. This is calculated using the Mifflin-St Jeor Equation, which is considered the most accurate formula for estimating BMR.</p>
           </div>
 
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">TDEE (Total Daily Energy Expenditure)</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">TDEE (Total Daily Energy Expenditure)</h3>
             <p>TDEE combines your BMR with your activity level to determine your total daily calorie burn. This includes calories burned through daily activities, exercise, and the thermic effect of food (calories burned during digestion).</p>
           </div>
 
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Macronutrients</h3>
-            <ul class="list-disc list-inside ml-2 md:ml-4 space-y-1 md:space-y-2">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Macronutrients</h3>
+            <ul class="list-disc list-inside ml-4 space-y-2">
               <li><strong>Protein (4 calories/gram):</strong> Essential for muscle maintenance and growth, immune function, and enzyme production. We recommend 1.6-2.2g per kg of body weight.</li>
               <li><strong>Carbohydrates (4 calories/gram):</strong> Your body's primary energy source, especially important for brain function and high-intensity exercise.</li>
               <li><strong>Fats (9 calories/gram):</strong> Crucial for hormone production, vitamin absorption, and cell membrane integrity. We recommend 20-35% of total calories.</li>
@@ -106,12 +110,12 @@ const structuredData = {
         </div>
       </section>
 
-      <section class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg">
-        <h2 class="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 md:mb-4">Tips for Success</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+      <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Tips for Success</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Tracking Your Progress</h3>
-            <ul class="list-disc list-inside space-y-1 md:space-y-2 text-gray-600 dark:text-gray-300">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tracking Your Progress</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
               <li>Weigh yourself at the same time each day</li>
               <li>Take progress photos every 2-4 weeks</li>
               <li>Track your measurements monthly</li>
@@ -119,9 +123,9 @@ const structuredData = {
               <li>Monitor your energy levels and performance</li>
             </ul>
           </div>
-          <div class="mt-4 md:mt-0">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Adjusting Your Numbers</h3>
-            <ul class="list-disc list-inside space-y-1 md:space-y-2 text-gray-600 dark:text-gray-300">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Adjusting Your Numbers</h3>
+            <ul class="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
               <li>Monitor progress for 2-3 weeks before making changes</li>
               <li>Adjust calories by 10-15% at a time</li>
               <li>Consider recalculating if weight changes by >10%</li>
@@ -133,23 +137,25 @@ const structuredData = {
       </section>
 
       {/* Bottom Ad */}
-      <GoogleAds slot="calculator-bottom-ad" client:load />
+      <div class="my-12">
+        <GoogleAds slot="calculator-bottom-ad" client:load />
+      </div>
 
-      <section class="bg-white dark:bg-gray-800 p-4 md:p-6 rounded-xl shadow-lg">
-        <h2 class="text-xl md:text-2xl font-semibold text-gray-900 dark:text-white mb-3 md:mb-4">Frequently Asked Questions</h2>
-        <div class="space-y-3 md:space-y-4">
+      <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
+        <div class="space-y-4">
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">How accurate is this calculator?</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How accurate is this calculator?</h3>
             <p class="text-gray-600 dark:text-gray-300">Our calculator uses the Mifflin-St Jeor Equation, which research has shown to be the most accurate formula for estimating BMR. However, individual variations in metabolism mean these are estimates and should be adjusted based on your progress.</p>
           </div>
 
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">How often should I recalculate my TDEE?</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">How often should I recalculate my TDEE?</h3>
             <p class="text-gray-600 dark:text-gray-300">We recommend recalculating your TDEE whenever your weight changes by more than 10 pounds, or if you make significant changes to your activity level. Regular recalculation ensures your nutrition plan stays aligned with your needs.</p>
           </div>
 
           <div>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1 md:mb-2">Why are my macros important?</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Why are my macros important?</h3>
             <p class="text-gray-600 dark:text-gray-300">Macronutrients play distinct roles in your body. Protein helps maintain and build muscle, carbohydrates provide energy, and fats support hormone production. Balancing these nutrients optimizes your results whether you're looking to lose fat, gain muscle, or maintain your weight.</p>
           </div>
         </div>
@@ -157,3 +163,9 @@ const structuredData = {
     </div>
   </div>
 </Layout>
+
+<style>
+.prose :where(ul > li):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
+  padding-left: 0.375em;
+}
+</style>

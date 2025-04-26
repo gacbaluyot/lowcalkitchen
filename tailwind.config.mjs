@@ -20,24 +20,52 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif'],
-        serif: ['Playfair Display', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Open Sans', 'Helvetica Neue', 'sans-serif'],
+        serif: ['"Playfair Display"', 'Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
+        heading: ['"Playfair Display"', 'Georgia', 'serif'],
+        body: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
       },
       typography: {
         DEFAULT: {
           css: {
             maxWidth: 'none',
+            color: 'var(--tw-prose-body)',
+            fontFamily: '"Plus Jakarta Sans", system-ui, sans-serif',
             h1: {
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontWeight: '700',
+              letterSpacing: '-0.025em',
             },
             h2: {
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontWeight: '600',
+              letterSpacing: '-0.025em',
             },
             h3: {
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontWeight: '600',
+              letterSpacing: '-0.025em',
             },
             h4: {
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: '"Playfair Display", Georgia, serif',
+              fontWeight: '600',
+            },
+            p: {
+              lineHeight: '1.75',
+            },
+            a: {
+              color: 'var(--tw-prose-links)',
+              textDecoration: 'none',
+              fontWeight: '500',
+              '&:hover': {
+                textDecoration: 'underline',
+              },
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
             },
           },
         },

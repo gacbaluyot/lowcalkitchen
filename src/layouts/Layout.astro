@@ -69,7 +69,7 @@ const websiteSchema = {
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -111,7 +111,21 @@ const websiteSchema = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
 
-    <!-- Defer non-critical CSS -->
+    <!-- Preload critical fonts -->
+    <link 
+      rel="preload" 
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap"
+      as="style"
+      crossorigin
+    />
+    <link 
+      rel="preload" 
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      as="style"
+      crossorigin
+    />
+
+    <!-- Load fonts -->
     <link 
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" 
       rel="stylesheet"
@@ -137,28 +151,58 @@ const websiteSchema = {
       :root {
         --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         --font-serif: 'Playfair Display', Georgia, serif;
+        --font-heading: var(--font-serif);
+        --font-body: var(--font-sans);
+        --header-height: 72px;
       }
       body {
-        font-family: var(--font-sans);
+        font-family: var(--font-body);
         margin: 0;
         padding: 0;
         background-color: #fafafa;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        padding-top: var(--header-height);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
       }
-      .nav-fixed {
+      h1, h2, h3, h4, h5, h6 {
+        font-family: var(--font-heading);
+        font-weight: 600;
+        letter-spacing: -0.025em;
+        line-height: 1.2;
+      }
+      .header {
         position: fixed;
-        width: 100%;
         top: 0;
+        left: 0;
+        right: 0;
+        height: var(--header-height);
         z-index: 50;
+        background-color: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(8px);
         border-bottom: 1px solid rgba(229, 231, 235, 0.2);
+        transition: transform 0.3s ease;
+      }
+      .header.header-hidden {
+        transform: translateY(-100%);
       }
       .dark body {
         background-color: #111827;
+      }
+      .dark .header {
+        background-color: rgba(31, 41, 55, 0.9);
       }
       .container {
         max-width: 1280px;
         margin: 0 auto;
         padding: 0 1rem;
+        width: 100%;
+      }
+      main {
+        flex: 1;
       }
       .card {
         background: white;
@@ -174,11 +218,32 @@ const websiteSchema = {
         background: #1f2937;
       }
     </style>
+
+    <script is:inline>
+      // Header scroll behavior
+      let lastScroll = 0;
+      const header = document.querySelector('.header');
+      const scrollThreshold = 100;
+
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll <= scrollThreshold) {
+          header?.classList.remove('header-hidden');
+        } else if (currentScroll > lastScroll) {
+          header?.classList.add('header-hidden');
+        } else {
+          header?.classList.remove('header-hidden');
+        }
+        
+        lastScroll = currentScroll;
+      });
+    </script>
   </head>
-  <body class="font-sans antialiased">
-    <nav class="nav-fixed bg-white/80 dark:bg-gray-800/80">
+  <body class="font-body antialiased">
+    <header class="header">
       <div class="container">
-        <div class="flex justify-between items-center py-4">
+        <div class="flex justify-between items-center h-[72px]">
           <a href="/" class="hover:opacity-90 transition-opacity">
             <Logo client:load />
           </a>
@@ -205,10 +270,14 @@ const websiteSchema = {
           </div>
         </div>
       </div>
-    </nav>
-    <main class="container py-8 mt-[72px]">
-      <slot />
+    </header>
+
+    <main class="flex-1">
+      <div class="container py-8">
+        <slot />
+      </div>
     </main>
+
     <Footer client:load />
     <CookieBanner client:load />
     
@@ -240,7 +309,7 @@ const websiteSchema = {
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 72px;
+  scroll-padding-top: var(--header-height);
 }
 
 /* Improved focus styles */
