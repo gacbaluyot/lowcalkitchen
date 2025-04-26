@@ -18,7 +18,7 @@ const totalRecipes = recipes?.length || 0;
 // Get all unique categories and their counts
 const categoryMap = new Map();
 recipes?.forEach(recipe => {
-  recipe.tags.forEach(tag => {
+  recipe.tags.forEach((tag: string) => {
     categoryMap.set(tag, (categoryMap.get(tag) || 0) + 1);
   });
 });
@@ -299,7 +299,7 @@ const topCategories = categoryStats.slice(0, 6);
                     <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     <div class="absolute bottom-4 left-4 right-4">
                       <div class="flex flex-wrap gap-2">
-                        {recipe.tags.slice(0, 2).map(tag => {
+                        {recipe.tags.slice(0, 2).map((tag: string) => {
                           const categoryInfo = categoryIcons[tag.toLowerCase()] || {
                             icon: '📝',
                             color: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
