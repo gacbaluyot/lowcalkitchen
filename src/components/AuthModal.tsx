@@ -105,10 +105,10 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-[100]"
+            className="fixed inset-0 bg-black/30 backdrop-blur-[2px] z-[60]"
           />
 
-          <div className="fixed inset-0 z-[101] flex items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[61] flex items-center justify-center p-4 sm:p-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -118,7 +118,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 stiffness: 300,
                 damping: 25
               }}
-              className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden"
+              className="w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden relative"
             >
               <div className="p-6 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
