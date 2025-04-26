@@ -247,7 +247,7 @@ const websiteSchema = {
   </head>
   <body class="font-sans antialiased min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
     <header class="sticky top-0 left-0 right-0 h-[var(--header-height)] z-50 bg-white/90 dark:bg-gray-800/90 border-b border-gray-200/20 dark:border-gray-700/20 transition-transform duration-300">
-      <div class="container mx-auto px-6 max-w-[1600px] h-full w-full">
+      <div class="container mx-auto px-6 h-full w-full">
         <div class="flex justify-between items-center h-full">
           <a href="/" class="hover:opacity-90 transition-opacity">
             <Logo client:load />
@@ -278,7 +278,7 @@ const websiteSchema = {
     </header>
 
     <main class="flex-1 pt-[var(--header-height)]">
-      <div class="container mx-auto px-6 max-w-[1600px] py-5">
+      <div class="container mx-auto px-6 w-full py-5">
         <slot />
       </div>
     </main>
