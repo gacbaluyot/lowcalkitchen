@@ -1,0 +1,97 @@
+---
+import ThemeToggle from './ThemeToggle.tsx';
+const currentPath = Astro.url.pathname;
+---
+
+<button
+  class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+  aria-label="Menu"
+  id="mobile-menu-button"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+  </svg>
+</button>
+
+<div 
+  id="mobile-menu" 
+  class="fixed inset-0 bg-white dark:bg-gray-800 z-50 transform translate-x-full transition-transform duration-300 ease-in-out"
+>
+  <div class="flex justify-end p-4">
+    <button
+      class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+      aria-label="Close menu"
+      id="mobile-menu-close"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <nav class="flex flex-col items-center space-y-6 p-8">
+    <a 
+      href="/" 
+      class={`${currentPath === '/' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      Home
+    </a>
+    <a 
+      href="/recipes" 
+      class={`${currentPath.startsWith('/recipes') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      Recipes
+    </a>
+    <a 
+      href="/calculator" 
+      class={`${currentPath === '/calculator' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      Calculator
+    </a>
+    <a 
+      href="/blog" 
+      class={`${currentPath.startsWith('/blog') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      Blog
+    </a>
+    <a 
+      href="/about" 
+      class={`${currentPath === '/about' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      About
+    </a>
+    <a 
+      href="/contact" 
+      class={`${currentPath === '/contact' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors text-lg`}
+    >
+      Contact
+    </a>
+    <div class="pt-8">
+      <ThemeToggle client:load />
+    </div>
+  </nav>
+</div>
+
+<script>
+  const menuButton = document.getElementById('mobile-menu-button');
+  const menuClose = document.getElementById('mobile-menu-close');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  menuButton?.addEventListener('click', () => {
+    mobileMenu?.classList.remove('translate-x-full');
+    document.body.style.overflow = 'hidden';
+  });
+
+  menuClose?.addEventListener('click', () => {
+    mobileMenu?.classList.add('translate-x-full');
+    document.body.style.overflow = '';
+  });
+
+  // Close menu when clicking outside
+  mobileMenu?.addEventListener('click', (e) => {
+    if (e.target === mobileMenu) {
+      mobileMenu.classList.add('translate-x-full');
+      document.body.style.overflow = '';
+    }
+  });
+</script> 

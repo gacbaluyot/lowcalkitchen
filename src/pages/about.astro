@@ -1,0 +1,88 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SocialShare from '../components/SocialShare.astro';
+
+const title = "About LowCal Kitchen - Healthy Recipes for Everyone";
+const description = "Learn about LowCal Kitchen's mission to provide healthy, high-protein recipes that make healthy eating simple and delicious for everyone.";
+const image = "https://images.unsplash.com/photo-1543339308-43e59d6b73a6?q=80";
+
+// Construct the full URL properly
+const siteUrl = import.meta.env.DEV ? `http://localhost:${import.meta.env.PORT || 4321}` : 'https://lowcalkitchen.com';
+const pageUrl = new URL(Astro.url.pathname, siteUrl).toString();
+---
+
+<Layout title={title} description={description} image={image}>
+  <main class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white">About Us</h1>
+      <SocialShare url={pageUrl} title={title} description={description} />
+    </div>
+
+    <!-- Main Content -->
+    <section class="mb-16 bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
+      <div class="prose dark:prose-invert max-w-none">
+        <p class="text-lg text-gray-600 dark:text-gray-300 mb-6">
+          Welcome to LowCal Kitchen, your go-to destination for healthy, protein-rich recipes that don't compromise on taste. We believe that eating well should be simple, delicious, and accessible to everyone.
+        </p>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">Our Mission</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">
+          Our mission is to help you make better food choices by providing:
+        </p>
+        <ul class="list-disc pl-6 text-gray-600 dark:text-gray-300 mb-6">
+          <li>High-protein, low-calorie recipes</li>
+          <li>Accurate nutritional information</li>
+          <li>Simple, easy-to-follow instructions</li>
+          <li>Meal prep and planning tips</li>
+        </ul>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">What We Offer</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Recipe Collection</h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              A growing collection of healthy recipes, each with complete nutritional information and easy-to-follow instructions.
+            </p>
+          </div>
+          <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Nutrition Tools</h3>
+            <p class="text-gray-600 dark:text-gray-300">
+              Helpful tools like our TDEE calculator to help you track and manage your nutritional goals.
+            </p>
+          </div>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">Join Our Community</h2>
+        <p class="text-gray-600 dark:text-gray-300 mb-6">
+          We're more than just a recipe website - we're a community of people passionate about healthy living. Follow us on social media for daily inspiration, tips, and updates.
+        </p>
+        <div class="flex gap-4">
+          <a 
+            href="https://instagram.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+          >
+            Instagram
+          </a>
+          <a 
+            href="https://facebook.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+          >
+            Facebook
+          </a>
+          <a 
+            href="https://pinterest.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
+          >
+            Pinterest
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout> 

@@ -7,6 +7,7 @@ import CookingTips from '../components/CookingTips';
 import HealthyEatingGuide from '../components/HealthyEatingGuide';
 import QuickTDEECalculator from '../components/QuickTDEECalculator';
 import NewsletterForm from '../components/NewsletterForm';
+import SocialShare from '../components/SocialShare.astro';
 
 const { data: recipes } = await supabase
   .from('recipes')
@@ -367,6 +368,11 @@ const topCategories = categoryStats.slice(0, 6);
         <NewsletterForm client:load />
       </AnimatedCard>
     </section>
+
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-4xl font-bold text-gray-900">LowCal Kitchen</h1>
+      <SocialShare url={pageUrl} title={title} description={description} />
+    </div>
   </div>
 </Layout>
 

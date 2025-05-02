@@ -1,0 +1,42 @@
+---
+const currentPath = Astro.url.pathname;
+---
+
+<nav class="flex items-center space-x-8 h-full">
+  <a 
+    href="/" 
+    class={`${currentPath === '/' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+  >
+    Home
+  </a>
+  <a 
+    href="/recipes" 
+    class={`${currentPath.startsWith('/recipes') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+  >
+    Recipes
+  </a>
+  <a 
+    href="/calculator" 
+    class={`${currentPath === '/calculator' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+  >
+    Calculator
+  </a>
+  <a 
+    href="/blog" 
+    class={`${currentPath.startsWith('/blog') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+  >
+    Blog
+  </a>
+  <a 
+    href="/about" 
+    class={`${currentPath === '/about' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors`}
+  >
+    About
+  </a>
+  <a 
+    href="/contact" 
+    class={`${currentPath === '/contact' ? 'text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-300'} hover:text-primary-600 dark:hover:text-primary-400 transition-colors mr-8`}
+  >
+    Contact
+  </a>
+</nav> 

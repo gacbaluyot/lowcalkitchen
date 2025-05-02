@@ -1,0 +1,126 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+  <div class="container mx-auto px-4 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- About Section -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">About Us</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          LowCal Kitchen is dedicated to providing healthy, protein-rich recipes that make healthy eating simple and delicious.
+        </p>
+        <a 
+          href="/about" 
+          class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+        >
+          Learn More →
+        </a>
+      </div>
+
+      <!-- Quick Links -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Links</h3>
+        <ul class="space-y-2">
+          <li>
+            <a 
+              href="/recipes" 
+              class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              Recipes
+            </a>
+          </li>
+          <li>
+            <a 
+              href="/calculator" 
+              class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              TDEE Calculator
+            </a>
+          </li>
+          <li>
+            <a 
+              href="/blog" 
+              class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              Blog
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Legal -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Legal</h3>
+        <ul class="space-y-2">
+          <li>
+            <a 
+              href="/privacy" 
+              class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              Privacy Policy
+            </a>
+          </li>
+          <li>
+            <a 
+              href="/terms" 
+              class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+            >
+              Terms of Service
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Contact</h3>
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          Have questions or suggestions? We'd love to hear from you!
+        </p>
+        <a 
+          href="/contact" 
+          class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
+        >
+          Get in Touch →
+        </a>
+      </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-600 dark:text-gray-300">
+          © {currentYear} LowCal Kitchen. All rights reserved.
+        </p>
+        <div class="flex space-x-4 mt-4 md:mt-0">
+          <a 
+            href="https://instagram.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
+            Instagram
+          </a>
+          <a 
+            href="https://facebook.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
+            Facebook
+          </a>
+          <a 
+            href="https://pinterest.com/lowcalkitchen" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
+            Pinterest
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer> 

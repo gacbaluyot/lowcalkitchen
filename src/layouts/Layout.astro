@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import MobileMenu from '../components/MobileMenu';
 import CookieBanner from '../components/CookieBanner';
 import UserMenu from '../components/UserMenu';
+import Navigation from '../components/Navigation.astro';
 
 interface Props {
   title?: string;
@@ -254,17 +255,12 @@ const websiteSchema = {
           
           <!-- Desktop Navigation -->
           <div class="hidden md:flex items-center h-full">
-            <div class="flex items-center space-x-8 h-full">
-              <a href="/" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Home</a>
-              <a href="/recipes" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Recipes</a>
-              <a href="/calculator" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Calculator</a>
-              <a href="/blog" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Blog</a>
-              <div class="flex items-center h-full">
-                <div class="mr-8">
-                  <ThemeToggle client:load />
-                </div>
-                <UserMenu client:load />
+            <Navigation />
+            <div class="flex items-center h-full">
+              <div class="mr-8">
+                <ThemeToggle client:load />
               </div>
+              <UserMenu client:load />
             </div>
           </div>
 
